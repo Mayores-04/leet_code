@@ -23,3 +23,6 @@ names.splice(1, 2, "Eve", "Frank"); // removes 2 items from index 1 and adds Eve
 console.log(names);
 names.push("Grace"); // adds Grace to the end of the array
 console.log(names);
+names.pop(); // removes last item from the array and returns removed item
+console.log(names);
+
