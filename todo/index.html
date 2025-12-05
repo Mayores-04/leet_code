@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="script.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <form onsubmit="handleSubmit(event)">
+      <h1>Todo List</h1>
+      <div>
+        <label for="taskTitle">Title</label>
+        <input type="text" id="taskTitle" name="taskTitle" required />
+      </div>
+      <div>
+        <label for="taskDescription">Description</label>
+        <textarea
+          id="taskDescription"
+          name="taskDescription"
+          required
+        ></textarea>
+      </div>
+      <button type="submit">Add Task</button>
+      <button type="reset">Reset</button>
+    </form>
+    <div>
+      <h2>Tasks:</h2>
+      <button id="Remove">Remove</button>
+      <button id="deleteAll">Delete All</button>
+
+      <ul id="tasksLists"></ul>
+    </div>
+  </body>
+</html>
+<script>
+  let id = 1;
+  let tasks = [];
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  function init() {
+    const removeBtn = document.getElementById('Remove');
+    const deleteBtn = document.getElementById('deleteAll');
+
+    // Load tasks from localStorage (if any) and render
+    tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    if (tasks.length) {
+      id = tasks.reduce((max, t) => Math.max(max, t.id), 0) + 1;
+    }
+    renderTasks();
+
+    removeBtn.onclick = function (){
+        tasks.pop();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+    // Clear all tasks
+    deleteBtn.onclick = function () {
+      tasks = [];
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      renderTasks();
+    };
+  }
+
+  function renderTasks() {
+    const tasksItem = document.getElementById('tasksLists');
+    tasksItem.innerHTML = '';
+    tasks.forEach(task => {
+      const li = document.createElement('li');
+      li.textContent = `Title: ${task.title}, Description: ${task.description}`;
+      tasksItem.appendChild(li);
+    });
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const titleInput = document.getElementById('taskTitle');
+    const descriptionInput = document.getElementById('taskDescription');
+
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
+    if (!title && !description) return;
+
+    const task = { id, title, description };
+    tasks.push(task);
+    id += 1;
+
+    // Persist tasks array
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+
+    // Re-render and clear inputs
+    renderTasks();
+    titleInput.value = '';
+    descriptionInput.value = '';
+  }
+</script>
